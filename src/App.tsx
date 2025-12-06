@@ -5,8 +5,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css'; // Kita akan gunakan ini nanti untuk styling
 
 function App() {
-  // 2. Gunakan React State untuk menyimpan daftar kata yang akan ditampilkan
-  //    Untuk saat ini, kita ambil 50 kata pertama dari daftar yang sudah diacak.
+
   const [wordsToType, setWordsToType] = useState<string[]>(() => generateWords());
   const [activeWordIndex, setActiveWordIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
