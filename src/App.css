@@ -1,0 +1,118 @@
+/* File: src/App.css */
+
+/* 1. Pengaturan Dasar & Layout Utama */
+html {
+  height: 100%; /* Pastikan elemen html mengisi seluruh tinggi */
+}
+
+body {
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  margin: 0; /* Hapus margin default dari body */
+
+  /* Gunakan Grid untuk perataan yang lebih sederhana dan kuat */
+  display: grid;
+  place-items: center; /* Singkatan untuk align-items: center dan justify-items: center */
+  min-height: 100%; /* Gunakan 100% dari tinggi html */
+}
+
+.app-container {
+  width: 80%;
+  max-width: 900px;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 2. Kontainer untuk Kata-kata */
+.word-container {
+  font-size: 1.8rem;
+  line-height: 3rem;
+  /* Hapus height dan overflow, biarkan ukurannya dinamis */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* 3. Gaya untuk Setiap Kelompok (Kata dan Separator) */
+.word {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.separator,
+.separator-active,
+.separator-error {
+  margin: 0 0.5rem;
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 0.8rem;
+}
+
+/* 4. Status Spesifik untuk Setiap Elemen */
+
+/* Gaya untuk huruf yang sudah selesai diketik */
+.correct {
+  color: #a1a1aa; /* Abu-abu */
+}
+
+/* Gaya untuk huruf aktif yang sedang ditunggu (tanpa error) */
+.active-char {
+  color: #18181b; /* Hitam */
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #3b82f6; /* Biru */
+  text-underline-offset: 10px;
+  animation: blink-underline 1s infinite;
+}
+
+/* Gaya untuk huruf aktif saat terjadi error */
+.incorrect.error {
+  color: #ef4444; /* Merah */
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #ef4444; /* Merah */
+  text-underline-offset: 10px;
+  animation: shake 0.4s;
+}
+
+/* Gaya untuk separator default (tidak aktif) */
+.separator {
+  color: #a1a1aa; /* Abu-abu */
+}
+
+/* Gaya untuk separator saat aktif */
+.separator-active {
+  color: #18181b; /* Hitam */
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #3b82f6; /* Biru */
+  text-underline-offset: 15px;
+  animation: blink-underline 1s infinite;
+}
+
+/* Gaya untuk separator saat error */
+.separator-error {
+  color: #ef4444; /* Merah */
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #ef4444; /* Merah */
+  text-underline-offset: 15px;
+  animation: shake 0.4s;
+}
+
+/* 5. Animasi */
+
+/* Animasi garis bawah berkedip */
+@keyframes blink-underline {
+  0%, 100% { text-decoration-color: #3b82f6; }
+  50% { text-decoration-color: transparent; }
+}
+
+/* Animasi getar saat error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
