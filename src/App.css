@@ -112,6 +112,34 @@ body {
   transition: opacity 0.3s ease-in-out;
 }
 
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; /* Beri sedikit jarak ke bawah */
+}
+
+/* Gaya untuk tombol speaker */
+.speaker-button {
+  background: none;
+  border: 2px solid transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.speaker-button:hover {
+  background-color: #f3f4f6; /* Warna abu-abu sangat terang saat di-hover */
+}
+
+.speaker-button:focus, .speaker-button:focus-visible {
+  outline: none;
+  border-color: #3b82f6; /* Garis biru saat fokus untuk aksesibilitas */
+}
+
+
 /* 5. Animasi */
 
 /* Animasi garis bawah berkedip */
