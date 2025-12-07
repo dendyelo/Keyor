@@ -1,6 +1,6 @@
 // File: src/App.tsx
 
-import { generateWords } from './data/words';
+import { generateWords, dictionary } from './data/dictionary';
 import React, { useState, useEffect } from 'react';
 import './App.css'; // Kita akan gunakan ini nanti untuk styling
 
@@ -11,6 +11,7 @@ function App() {
   const [userInput, setUserInput] = useState("");
   const [isError, setIsError] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
+  const [currentTranslation, setCurrentTranslation] = useState<string>("");
 
   const resetSession = () => {
     setWordsToType(generateWords()); // Dapatkan kata-kata baru
@@ -89,7 +90,13 @@ function App() {
     };
   }, [activeWordIndex, userInput, wordsToType]);
 
-
+useEffect(() => {
+    const activeWord = wordsToType[activeWordIndex];
+    if (activeWord) {
+      const translation = dictionary[activeWord.toLowerCase()];
+      setCurrentTranslation(translation || "");
+    }
+  }, [activeWordIndex, wordsToType]);
 
 
 
@@ -98,6 +105,12 @@ function App() {
     <header>
       <h1>Keyor</h1>
     </header>
+
+    {/* TAMPILKAN TERJEMAHAN DI SINI */}
+    <div className="translation-container">
+      {currentTranslation}
+    </div>
+
     <main>
       <div className="word-container">
         {wordsToType.map((word, wordIndex) => {
