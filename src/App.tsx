@@ -139,7 +139,11 @@ function App() {
 
       if (key === ' ') {
         e.preventDefault();
+        // Setiap kali spasi ditekan, itu dihitung sebagai satu "ketukan karakter".
+        setTotalCharsTyped(prev => prev + 1);
+
         if (userInput === displayWord) {
+          // Spasi BENAR: Tidak ada penambahan error.
           if (activeWordIndex === wordsToType.length - 1) {
             resetSession();
           } else {
@@ -148,22 +152,23 @@ function App() {
             setIsError(false);
           }
         } else {
-          logMistake(activeWordIndex, userInput.length);
+          // Spasi SALAH: Catat kesalahan.
+          setTotalErrors(prev => prev + 1);
           setIsError(true);
           setErrorCount(c => c + 1);
         }
         return;
       }
 
-      // Fungsi Backspace dinonaktifkan sesuai permintaan.
+      // Fungsi Backspace dinonaktifkan.
 
       if (key.length === 1 && !e.ctrlKey && !e.metaKey) {
         setTotalCharsTyped(prev => prev + 1);
 
         if (userInput.length >= displayWord.length) {
+          logMistake(activeWordIndex, userInput.length);
           setIsError(true);
           setErrorCount(c => c + 1);
-          logMistake(activeWordIndex, userInput.length);
           return;
         }
         setUserInput(currentInput => {
@@ -333,9 +338,6 @@ function App() {
           }
 
           if (type === 'accuracy') {
-            if (lastSessionStats.duration === 0) {
-              return "Selesaikan satu sesi untuk melihat detail.";
-            }
             return (
               <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '0 8px', alignItems: 'center' }}>
                 <span>Total</span>
