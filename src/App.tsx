@@ -92,7 +92,7 @@ function App() {
       const j = Math.floor(Math.random() * (i + 1));
       [words[i], words[j]] = [words[j], words[i]];
     }
-    return words.slice(0, 20);
+    return words.slice(0, 13);
   };
 
   /**
