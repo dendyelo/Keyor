@@ -7,8 +7,8 @@ export const en = {
   // Daftar nama kategori untuk ditampilkan di UI.
   categories: {
     full: "Full Vocabulary",
-    hotel: "Hotel",
-    restaurant: "Restaurant",
+    hotel: "Hotel (Beta)",
+    restaurant: "Restaurant (Beta)",
   },
   // Data kamus sebenarnya untuk setiap kategori.
   data: {

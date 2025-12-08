@@ -46,7 +46,7 @@ header {
   /* Kelas dasar untuk pengelompokan */
 }
 
-/* --- Logika Baru untuk Dropdown Tersembunyi --- */
+/* --- Logika untuk Dropdown Tersembunyi --- */
 .header-group.left {
   /* Secara default, dropdown tersembunyi (opacity 0) */
   opacity: 0;
@@ -76,7 +76,7 @@ header:hover .header-group.left {
   visibility: visible;
   pointer-events: auto;
 }
-/* --- Akhir Logika Baru --- */
+/* --- Akhir Logika Dropdown --- */
 
 
 .header-group.center {
@@ -227,16 +227,19 @@ input:checked + .slider:before {
 /* 6. Status untuk Setiap Huruf & Separator                                   */
 /* -------------------------------------------------------------------------- */
 
+/* Huruf yang sudah lewat dan benar */
 .correct {
   color: #a1a1aa;
 }
 
+/* Huruf yang salah (baik yang sudah lewat maupun yang aktif) */
 .incorrect {
   color: #ef4444;
 }
 
+/* Huruf aktif yang sedang ditunggu (tanpa error) */
 .active-char {
-  color: #18181b;
+  color: #18181b; /* Warna hitam default */
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-decoration-color: #3b82f6;
@@ -244,15 +247,19 @@ input:checked + .slider:before {
   animation: blink-underline 1s infinite;
 }
 
+/* PERBAIKAN BUG: Aturan spesifik untuk huruf aktif saat error */
 .active-char.error {
-  text-decoration-color: #ef4444;
-  animation: shake 0.4s;
+  color: #ef4444; /* Pastikan warna teks menjadi merah */
+  text-decoration-color: #ef4444; /* Garis bawah juga merah */
+  animation: shake 0.4s; /* Mainkan animasi getar */
 }
 
+/* Gaya untuk separator default (tidak aktif) */
 .separator {
   color: #a1a1aa; 
 }
 
+/* Gaya untuk separator saat aktif (menunggu spasi) */
 .separator-active {
   color: #18181b; 
   text-decoration: underline;
@@ -262,6 +269,7 @@ input:checked + .slider:before {
   animation: blink-underline 1s infinite;
 }
 
+/* Gaya untuk separator saat error (spasi salah ditekan) */
 .separator-error {
   color: #ef4444; 
   text-decoration: underline;
@@ -275,11 +283,13 @@ input:checked + .slider:before {
 /* 7. Animasi                                                                 */
 /* -------------------------------------------------------------------------- */
 
+/* Animasi untuk garis bawah aktif agar berkedip. */
 @keyframes blink-underline {
   0%, 100% { text-decoration-color: #3b82f6; }
   50% { text-decoration-color: transparent; }
 }
 
+/* Animasi getar untuk memberikan umpan balik saat terjadi error. */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-3px); }

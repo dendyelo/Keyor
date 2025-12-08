@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // 1. IMPOR DEPENDENSI
 // -----------------------------------------------------------------------------
-import React, { useState, useEffect, useRef } from 'react'; // Tambahkan useRef
+import React, { useState, useEffect, useRef } from 'react';
 import { content } from './data';
 import { formatWordForDisplay } from './utils/formatter';
 import { speak } from './utils/speech';
@@ -53,7 +53,7 @@ function App() {
   const appContainerRef = useRef<HTMLDivElement>(null);
 
   // State untuk UI & Pengaturan.
-  const [selectedLang] = useState<LanguageCode>('en');
+  const [selectedLang] = useState<LanguageCode>('en'); // Fungsi setter tidak digunakan, jadi kita abaikan.
   const [selectedCat, setSelectedCat] = useState<CategoryCode>('full');
   const [isInitialLoad, setIsInitialLoad] = useState(true); // Untuk visibilitas awal dropdown.
 
@@ -92,14 +92,14 @@ function App() {
       const j = Math.floor(Math.random() * (i + 1));
       [words[i], words[j]] = [words[j], words[i]];
     }
-    return words.slice(0, 13);
+    return words.slice(0, 15); // Mengembalikan 15 kata per sesi.
   };
 
   /**
    * Mencatat posisi kesalahan untuk pewarnaan permanen.
    */
   const logMistake = (wordIdx: number, charIdx: number) => {
-    setTotalErrors(prev => prev + 1);
+    // Tidak menambah totalErrors di sini karena sudah ditangani di handleKeyDown.
     setMistakes(prevMistakes => {
       const newMistakes = { ...prevMistakes };
       const mistakesInWord = newMistakes[wordIdx] ? new Set(newMistakes[wordIdx]) : new Set<number>();
@@ -122,7 +122,7 @@ function App() {
     setTotalCharsTyped(0);
     setTotalErrors(0);
     setMistakes({});
-    appContainerRef.current?.focus(); // Pindahkan fokus untuk mencegah bug dropdown.
+    appContainerRef.current?.focus();
   };
 
   /**
@@ -172,7 +172,7 @@ function App() {
    * Efek untuk menangani visibilitas awal dropdown.
    */
   useEffect(() => {
-    const timer = setTimeout(() => setIsInitialLoad(false), 300); // timer fade out
+    const timer = setTimeout(() => setIsInitialLoad(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -205,6 +205,9 @@ function App() {
             setIsError(false);
           }
         } else {
+          // PERBAIKAN BUG: Mencatat kesalahan saat spasi ditekan pada waktu yang salah.
+          const mistakePosition = userInput.length;
+          logMistake(activeWordIndex, mistakePosition);
           setTotalErrors(prev => prev + 1);
           setIsError(true);
           setErrorCount(c => c + 1);
@@ -215,6 +218,7 @@ function App() {
         setTotalCharsTyped(prev => prev + 1);
         if (userInput.length >= displayWord.length) {
           logMistake(activeWordIndex, userInput.length);
+          setTotalErrors(prev => prev + 1);
           setIsError(true);
           setErrorCount(c => c + 1);
           return;
@@ -226,6 +230,7 @@ function App() {
             return currentInput + key;
           } else {
             logMistake(activeWordIndex, currentInput.length);
+            setTotalErrors(prev => prev + 1);
             setIsError(true);
             setErrorCount(c => c + 1);
             return currentInput;
