@@ -11,12 +11,66 @@ import { Tooltip } from 'react-tooltip';
 import './App.css';
 
 // -----------------------------------------------------------------------------
-// 2. DEFINISI KOMPONEN UTAMA: App
+// 2. KOMPONEN BANTUAN (HELPER COMPONENT)
+// -----------------------------------------------------------------------------
+
+/**
+ * Komponen kecil untuk menampilkan perubahan (delta) statistik.
+ * - Panah atas (hijau) untuk peningkatan.
+ * - Panah bawah (merah) untuk penurunan.
+ * - Panah gabungan (hijau/merah) jika tidak ada perubahan atau untuk placeholder.
+ */
+// Di dalam App.tsx, di atas `function App() { ... }`
+
+/**
+ * Komponen untuk menampilkan perubahan statistik.
+ * Memiliki beberapa mode: naik, turun, sama, dan placeholder.
+ */
+const StatDelta: React.FC<{ delta: number; isPlaceholder?: boolean }> = ({ delta, isPlaceholder = false }) => {
+  const baseStyle: React.CSSProperties = {
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+  };
+
+  // Mode 1: Placeholder (saat awal)
+  if (isPlaceholder) {
+    return (
+      <span style={{ ...baseStyle, color: '#cbd5e1' }}> {/* Warna abu-abu muda */}
+        ▲▼
+      </span>
+    );
+  }
+
+  // Mode 2: Tidak ada perubahan (delta adalah 0)
+  if (delta === 0) {
+    return (
+      <span style={baseStyle}>
+        <span style={{ ...baseStyle, color: '#22c55e' }}>▲</span>
+        <span style={{ ...baseStyle, color: '#ef4444' }}>▼</span>
+      </span>
+    );
+  }
+
+  // Mode 3: Ada perubahan (naik atau turun)
+  const isPositive = delta > 0;
+  const color = isPositive ? '#22c55e' : '#ef4444';
+  const symbol = isPositive ? '▲' : '▼';
+
+  return (
+    <span style={{ ...baseStyle, color }}>
+      {symbol} {Math.abs(delta)}
+    </span>
+  );
+};
+
+
+// -----------------------------------------------------------------------------
+// 3. DEFINISI KOMPONEN UTAMA: App
 // -----------------------------------------------------------------------------
 function App() {
   
   // ---------------------------------------------------------------------------
-  // 3. DEKLARASI STATE
+  // 4. DEKLARASI STATE
   // ---------------------------------------------------------------------------
 
   // State untuk logika inti latihan mengetik
@@ -34,26 +88,32 @@ function App() {
   // State untuk kontrol fitur voice over
   const [isVoiceOverEnabled, setIsVoiceOverEnabled] = useState(false);
 
-  // State untuk statistik
+  // State untuk statistik sesi
   const [startTime, setStartTime] = useState<number | null>(null);
   const [totalCharsTyped, setTotalCharsTyped] = useState(0);
   const [totalErrors, setTotalErrors] = useState(0);
   
-  // State untuk menyimpan hasil sesi terakhir dalam bentuk objek.
+  // State untuk menyimpan hasil sesi TERAKHIR dalam bentuk objek.
   const [lastSessionStats, setLastSessionStats] = useState({
     wpm: '0' as number | string,
     accuracy: '0' as number | string,
     totalChars: 0,
     correctChars: 0,
     totalErrors: 0,
-    duration: 0, // dalam detik
+    duration: 0,
+  });
+
+  // State untuk menyimpan hasil sesi SEBELUM yang terakhir, untuk perbandingan.
+  const [previousSessionStats, setPreviousSessionStats] = useState({
+    wpm: 0,
+    accuracy: 0,
   });
 
   // State untuk melacak posisi spesifik dari setiap kesalahan.
   const [mistakes, setMistakes] = useState<Record<number, Set<number>>>({});
 
   // ---------------------------------------------------------------------------
-  // 4. FUNGSI-FUNGSI BANTUAN (HELPER FUNCTIONS)
+  // 5. FUNGSI-FUNGSI BANTUAN (HELPER FUNCTIONS)
   // ---------------------------------------------------------------------------
 
   /**
@@ -71,10 +131,18 @@ function App() {
   };
 
   /**
-   * Menghitung statistik di akhir sesi, lalu me-reset sesi untuk memulai yang baru.
+   * Menghitung statistik, menggeser data sesi, lalu me-reset sesi untuk memulai yang baru.
    */
   const resetSession = () => {
     if (startTime) {
+      // Sebelum menghitung statistik baru, geser statistik "terakhir" ke "sebelumnya".
+      if (typeof lastSessionStats.wpm === 'number' && typeof lastSessionStats.accuracy === 'number') {
+        setPreviousSessionStats({
+          wpm: lastSessionStats.wpm,
+          accuracy: lastSessionStats.accuracy,
+        });
+      }
+
       const endTime = Date.now();
       const durationInSeconds = (endTime - startTime) / 1000;
       const durationInMinutes = durationInSeconds / 60;
@@ -83,7 +151,7 @@ function App() {
       const wpm = durationInMinutes > 0 ? (correctChars / 5) / durationInMinutes : 0;
       const accuracy = totalCharsTyped > 0 ? (correctChars / totalCharsTyped) * 100 : 0;
 
-      // Simpan semua data sesi ke dalam state untuk digunakan oleh tooltip dinamis.
+      // Simpan semua data sesi yang baru selesai ke dalam state.
       setLastSessionStats({
         wpm: Math.round(wpm),
         accuracy: Math.round(Math.max(0, Math.min(100, accuracy))),
@@ -94,6 +162,7 @@ function App() {
       });
     }
 
+    // Reset semua state untuk sesi baru.
     setWordsToType(generateWords());
     setActiveWordIndex(0);
     setUserInput('');
@@ -113,7 +182,7 @@ function App() {
   };
 
   // ---------------------------------------------------------------------------
-  // 5. EFEK SAMPING (SIDE EFFECTS) DENGAN `useEffect`
+  // 6. EFEK SAMPING (SIDE EFFECTS) DENGAN `useEffect`
   // ---------------------------------------------------------------------------
 
   /**
@@ -139,11 +208,9 @@ function App() {
 
       if (key === ' ') {
         e.preventDefault();
-        // Setiap kali spasi ditekan, itu dihitung sebagai satu "ketukan karakter".
         setTotalCharsTyped(prev => prev + 1);
 
         if (userInput === displayWord) {
-          // Spasi BENAR: Tidak ada penambahan error.
           if (activeWordIndex === wordsToType.length - 1) {
             resetSession();
           } else {
@@ -152,15 +219,12 @@ function App() {
             setIsError(false);
           }
         } else {
-          // Spasi SALAH: Catat kesalahan.
           setTotalErrors(prev => prev + 1);
           setIsError(true);
           setErrorCount(c => c + 1);
         }
         return;
       }
-
-      // Fungsi Backspace dinonaktifkan.
 
       if (key.length === 1 && !e.ctrlKey && !e.metaKey) {
         setTotalCharsTyped(prev => prev + 1);
@@ -216,7 +280,7 @@ function App() {
   }, [activeWordIndex, wordsToType, isVoiceOverEnabled]);
 
   // ---------------------------------------------------------------------------
-  // 6. BLOK RENDER JSX
+  // 7. BLOK RENDER JSX
   // ---------------------------------------------------------------------------
   return (
     <div className="app-container">
@@ -243,7 +307,14 @@ function App() {
           data-tooltip-type="wpm"
         >
           <div className="stat-value">{lastSessionStats.wpm}</div>
-          <div className="stat-label">WPM</div>
+          <div className="stat-label">
+            <span>WPM</span>
+            {/* Tampilkan delta WPM atau placeholder jika belum ada data perbandingan. */}
+            {previousSessionStats.wpm > 0 && typeof lastSessionStats.wpm === 'number'
+              ? <StatDelta delta={lastSessionStats.wpm - previousSessionStats.wpm} />
+              : <StatDelta delta={0} isPlaceholder={true} /> // Beri tahu ini adalah placeholder
+            }
+          </div>
         </div>
         <div 
           className="stat-item"
@@ -256,7 +327,14 @@ function App() {
               : lastSessionStats.accuracy
             }
           </div>
-          <div className="stat-label">Accuracy</div>
+          <div className="stat-label">
+            <span>Accuracy</span>
+            {/* Tampilkan delta Akurasi atau placeholder jika belum ada data perbandingan. */}
+            {previousSessionStats.accuracy > 0 && typeof lastSessionStats.accuracy === 'number'
+              ? <StatDelta delta={lastSessionStats.accuracy - previousSessionStats.accuracy} />
+              : <StatDelta delta={0} isPlaceholder={true} /> // Beri tahu ini adalah placeholder
+            }
+          </div>
         </div>
       </div>
 
@@ -320,7 +398,7 @@ function App() {
         </div>
       </main>
       
-      {/* Komponen Tooltip untuk menangani tooltip di seluruh aplikasi. */}
+      {/* Komponen Tooltip untuk menangani semua tooltip di aplikasi. */}
       <Tooltip id="speaker-tooltip" />
       <Tooltip 
         id="stats-tooltip"

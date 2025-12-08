@@ -140,6 +140,19 @@ input:focus + .slider {
   align-items: center;
 }
 
+.stat-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  
+  /* --- PROPERTI BARU UNTUK LAYOUT --- */
+  display: flex;
+  justify-content: center; /* Pusatkan konten (teks + delta) */
+  align-items: center;    /* Sejajarkan secara vertikal */
+  gap: 0.5rem;              /* Beri sedikit jarak antara teks dan delta */
+}
+
 /* -------------------------------------------------------------------------- */
 /* 4. GAYA UNTUK SETIAP KATA & SEPARATOR                                      */
 /* -------------------------------------------------------------------------- */
