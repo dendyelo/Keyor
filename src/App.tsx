@@ -38,8 +38,16 @@ function App() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [totalCharsTyped, setTotalCharsTyped] = useState(0);
   const [totalErrors, setTotalErrors] = useState(0);
-  const [lastWPM, setLastWPM] = useState<number | string>('0');
-  const [lastAccuracy, setLastAccuracy] = useState<number | string>('0%');
+  
+  // State untuk menyimpan hasil sesi terakhir dalam bentuk objek.
+  const [lastSessionStats, setLastSessionStats] = useState({
+    wpm: '0' as number | string,
+    accuracy: '0' as number | string,
+    totalChars: 0,
+    correctChars: 0,
+    totalErrors: 0,
+    duration: 0, // dalam detik
+  });
 
   // State untuk melacak posisi spesifik dari setiap kesalahan.
   const [mistakes, setMistakes] = useState<Record<number, Set<number>>>({});
@@ -55,7 +63,6 @@ function App() {
     setTotalErrors(prev => prev + 1);
     setMistakes(prevMistakes => {
       const newMistakes = { ...prevMistakes };
-      // Perbaikan TypeScript: Tentukan tipe Set secara eksplisit saat membuat Set baru yang kosong.
       const mistakesInWord = newMistakes[wordIdx] ? new Set(newMistakes[wordIdx]) : new Set<number>();
       mistakesInWord.add(charIdx);
       newMistakes[wordIdx] = mistakesInWord;
@@ -69,18 +76,22 @@ function App() {
   const resetSession = () => {
     if (startTime) {
       const endTime = Date.now();
-      const durationInMinutes = (endTime - startTime) / 1000 / 60;
-      // 1. Hitung karakter benar, pastikan tidak pernah kurang dari 0.
+      const durationInSeconds = (endTime - startTime) / 1000;
+      const durationInMinutes = durationInSeconds / 60;
+
       const correctChars = Math.max(0, totalCharsTyped - totalErrors);
-
-      // 2. Hitung WPM, dengan pengaman untuk durasi 0.
       const wpm = durationInMinutes > 0 ? (correctChars / 5) / durationInMinutes : 0;
-      setLastWPM(Math.round(wpm));
-
-      // 3. Hitung Akurasi, dengan pengaman untuk total ketukan 0.
       const accuracy = totalCharsTyped > 0 ? (correctChars / totalCharsTyped) * 100 : 0;
-      // Pastikan akurasi selalu dalam rentang 0-100.
-      setLastAccuracy(Math.round(Math.max(0, Math.min(100, accuracy))));
+
+      // Simpan semua data sesi ke dalam state untuk digunakan oleh tooltip dinamis.
+      setLastSessionStats({
+        wpm: Math.round(wpm),
+        accuracy: Math.round(Math.max(0, Math.min(100, accuracy))),
+        totalChars: totalCharsTyped,
+        correctChars: correctChars,
+        totalErrors: totalErrors,
+        duration: parseFloat(durationInSeconds.toFixed(2)),
+      });
     }
 
     setWordsToType(generateWords());
@@ -91,7 +102,7 @@ function App() {
     setStartTime(null);
     setTotalCharsTyped(0);
     setTotalErrors(0);
-    setMistakes({}); // Reset catatan kesalahan untuk sesi baru.
+    setMistakes({});
   };
 
   /**
@@ -137,17 +148,15 @@ function App() {
             setIsError(false);
           }
         } else {
-          // Tentukan di mana kesalahan terjadi.
-          const mistakeIndex = userInput.length; 
-          // Catat kesalahan pada posisi tersebut.
-          logMistake(activeWordIndex, mistakeIndex); 
-
+          logMistake(activeWordIndex, userInput.length);
           setIsError(true);
           setErrorCount(c => c + 1);
         }
         return;
       }
-      
+
+      // Fungsi Backspace dinonaktifkan sesuai permintaan.
+
       if (key.length === 1 && !e.ctrlKey && !e.metaKey) {
         setTotalCharsTyped(prev => prev + 1);
 
@@ -223,12 +232,25 @@ function App() {
       </header>
 
       <div className="stats-container">
-        <div className="stat-item">
-          <div className="stat-value">{lastWPM}</div>
+        <div 
+          className="stat-item"
+          data-tooltip-id="stats-tooltip"
+          data-tooltip-type="wpm"
+        >
+          <div className="stat-value">{lastSessionStats.wpm}</div>
           <div className="stat-label">WPM</div>
         </div>
-        <div className="stat-item">
-          <div className="stat-value">{typeof lastAccuracy === 'number' ? `${lastAccuracy}%` : lastAccuracy}</div>
+        <div 
+          className="stat-item"
+          data-tooltip-id="stats-tooltip"
+          data-tooltip-type="accuracy"
+        >
+          <div className="stat-value">
+            {typeof lastSessionStats.accuracy === 'number' 
+              ? `${lastSessionStats.accuracy}%` 
+              : lastSessionStats.accuracy
+            }
+          </div>
           <div className="stat-label">Accuracy</div>
         </div>
       </div>
@@ -250,7 +272,6 @@ function App() {
                   {displayWord.split('').map((char, charIndex) => {
                     const isActiveChar = isActiveWord && charIndex === userInput.length;
                     let charClassName = "";
-
                     const wasMistake = mistakes[wordIndex]?.has(charIndex);
 
                     if (wordIndex < activeWordIndex) {
@@ -294,7 +315,41 @@ function App() {
         </div>
       </main>
       
+      {/* Komponen Tooltip untuk menangani tooltip di seluruh aplikasi. */}
       <Tooltip id="speaker-tooltip" />
+      <Tooltip 
+        id="stats-tooltip"
+        style={{ padding: '8px' }}
+        render={({ activeAnchor }) => {
+          const type = activeAnchor?.getAttribute('data-tooltip-type');
+
+          if (type === 'wpm') {
+            return (
+              <div style={{ textAlign: 'center' }}>
+                <strong>{lastSessionStats.wpm}</strong>
+                <div>Words Per Minute</div>
+              </div>
+            );
+          }
+
+          if (type === 'accuracy') {
+            if (lastSessionStats.duration === 0) {
+              return "Selesaikan satu sesi untuk melihat detail.";
+            }
+            return (
+              <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '0 8px', alignItems: 'center' }}>
+                <span>Total</span>
+                <span>: {lastSessionStats.totalChars}</span>
+                <span>Correct</span>
+                <span>: {lastSessionStats.correctChars}</span>
+                <span>Incorrect</span>
+                <span>: {lastSessionStats.totalErrors}</span>
+              </div>
+            );
+          }
+          return null;
+        }}
+      />
     </div>
   );
 }
