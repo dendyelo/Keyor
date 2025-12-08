@@ -70,11 +70,17 @@ function App() {
     if (startTime) {
       const endTime = Date.now();
       const durationInMinutes = (endTime - startTime) / 1000 / 60;
-      const correctChars = totalCharsTyped - totalErrors;
+      // 1. Hitung karakter benar, pastikan tidak pernah kurang dari 0.
+      const correctChars = Math.max(0, totalCharsTyped - totalErrors);
+
+      // 2. Hitung WPM, dengan pengaman untuk durasi 0.
       const wpm = durationInMinutes > 0 ? (correctChars / 5) / durationInMinutes : 0;
       setLastWPM(Math.round(wpm));
+
+      // 3. Hitung Akurasi, dengan pengaman untuk total ketukan 0.
       const accuracy = totalCharsTyped > 0 ? (correctChars / totalCharsTyped) * 100 : 0;
-      setLastAccuracy(Math.round(accuracy));
+      // Pastikan akurasi selalu dalam rentang 0-100.
+      setLastAccuracy(Math.round(Math.max(0, Math.min(100, accuracy))));
     }
 
     setWordsToType(generateWords());
@@ -141,13 +147,7 @@ function App() {
         }
         return;
       }
-
-      if (key === 'Backspace') {
-        setUserInput(currentInput => currentInput.slice(0, -1));
-        setIsError(false);
-        return;
-      }
-
+      
       if (key.length === 1 && !e.ctrlKey && !e.metaKey) {
         setTotalCharsTyped(prev => prev + 1);
 
