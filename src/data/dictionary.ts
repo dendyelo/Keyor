@@ -32,7 +32,7 @@ export const dictionary: Record<string, string> = {
     him: "dia (lk)",
     his: "miliknya (lk)",
     how: "bagaimana",
-    I: "saya",
+    i: "saya",
     if: "jika",
     in: "di",
     into: "ke dalam",
