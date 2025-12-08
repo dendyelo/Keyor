@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateWords, dictionary } from './data/dictionary';
 import { formatWordForDisplay } from './utils/formatter';
+import { Tooltip } from 'react-tooltip';
 import { speak } from './utils/speech';
 import './App.css';
 
@@ -70,6 +71,12 @@ function App() {
    */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+
+      if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+        e.preventDefault(); // Mencegah perilaku default browser.
+        toggleVoiceOver();  // Panggil fungsi kita untuk mengubah state.
+        return; // Hentikan eksekusi agar tidak dianggap sebagai input mengetik.
+      }
       const key = e.key;
       
       // Ambil kata dari data internal (misal: "i").
@@ -170,7 +177,12 @@ function App() {
     <div className="app-container">
       <header>
         <h1>Keyor</h1>
-        <button onClick={toggleVoiceOver} className="speaker-button" title={isVoiceOverEnabled ? "Disable Voice Over" : "Enable Voice Over"}>
+        <button 
+          onClick={toggleVoiceOver} 
+          className="speaker-button" 
+          data-tooltip-id="speaker-tooltip"
+          data-tooltip-content={`${isVoiceOverEnabled ? "Disable" : "Enable"} Voice Over (Ctrl + M)`}
+        >
           {isVoiceOverEnabled ? '🔊' : '🔇'}
         </button>
       </header>
@@ -238,6 +250,7 @@ function App() {
           })}
         </div>
       </main>
+      <Tooltip id="speaker-tooltip" />
     </div>
   );
 }
