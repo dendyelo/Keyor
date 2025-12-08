@@ -1,22 +1,23 @@
 /* File: src/App.css */
 
 /* Impor gaya dasar untuk react-tooltip */
-@import 'react-tooltip/dist/react-tooltip.css';
+@import "react-tooltip/dist/react-tooltip.css";
 
 /* -------------------------------------------------------------------------- */
-/* 1. PENGATURAN DASAR & LAYOUT UTAMA                                         */
+/* 1. Pengaturan Dasar & Layout Utama                                         */
 /* -------------------------------------------------------------------------- */
 
-html, body {
-  height: 100%;
-  margin: 0;
+html {
+  height: 100%; 
 }
 
 body {
   font-family: sans-serif;
   background-color: #f0f0f0;
+  margin: 0; 
   display: grid;
-  place-items: center;
+  place-items: center; /* Cara modern untuk menengahkan elemen */
+  min-height: 100%; 
 }
 
 .app-container {
@@ -29,17 +30,84 @@ body {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 2. HEADER & KONTROL APLIKASI                                               */
+/* 2. Layout Header                                                           */
 /* -------------------------------------------------------------------------- */
 
 header {
+  width: 100%;
+  position: relative; /* Diperlukan untuk penengah absolut judul */
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 1rem 0; 
   margin-bottom: 1rem;
 }
 
-/* --- GAYA UNTUK KOMPONEN SWITCH TOGGLE MODERN --- */
+.header-group {
+  /* Kelas dasar untuk pengelompokan */
+}
+
+/* --- Logika Baru untuk Dropdown Tersembunyi --- */
+.header-group.left {
+  /* Secara default, dropdown tersembunyi (opacity 0) */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* Tidak bisa diklik saat tersembunyi */
+  
+  /* Efek transisi yang halus saat muncul/menghilang */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  /* Gaya tata letak tetap didefinisikan di sini */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+/* Aturan ini membuat dropdown terlihat saat header di-hover */
+header:hover .header-group.left {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto; /* Bisa diklik saat terlihat */
+}
+
+/* Aturan ini (ditambahkan dari React) membuat dropdown terlihat di awal */
+.header-group.left.initial-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+/* --- Akhir Logika Baru --- */
+
+
+.header-group.center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none; /* Agar judul tidak bisa diklik */
+}
+
+.header-group.center h1 {
+  margin: 0;
+}
+
+.header-group.right {
+  margin-left: auto; /* Dorong ke ujung kanan */
+}
+
+/* Gaya untuk elemen dropdown */
+.language-select,
+.category-select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. Kontrol (Switch Toggle Suara)                                           */
+/* -------------------------------------------------------------------------- */
 
 .switch-toggle {
   position: relative;
@@ -86,15 +154,10 @@ input:checked + .slider:before {
   transform: translateX(22px);
 }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #3b82f6;
-}
-
 /* -------------------------------------------------------------------------- */
-/* 3. AREA KONTEN (STATISTIK, TERJEMAHAN & KATA-KATA)                         */
+/* 4. Area Statistik & Terjemahan                                             */
 /* -------------------------------------------------------------------------- */
 
-/* Kontainer untuk menampilkan statistik. */
 .stats-container {
   display: flex;
   justify-content: center;
@@ -104,23 +167,26 @@ input:focus + .slider {
 }
 
 .stat-item {
-  display: flex;
-  flex-direction: column;
+  min-width: 80px;
 }
 
 .stat-value {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #3b82f6;
+  color: #18181b;
 }
 
 .stat-label {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #6b7280;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Kontainer untuk menampilkan terjemahan kata. */
 .translation-container {
   font-size: 1.5rem;
   color: #6b7280;
@@ -131,7 +197,10 @@ input:focus + .slider {
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Kontainer utama yang membungkus semua kata dan separator. */
+/* -------------------------------------------------------------------------- */
+/* 5. Area Latihan Mengetik                                                   */
+/* -------------------------------------------------------------------------- */
+
 .word-container {
   font-size: 1.8rem;
   line-height: 3rem;
@@ -139,23 +208,6 @@ input:focus + .slider {
   flex-wrap: wrap;
   align-items: center;
 }
-
-.stat-label {
-  font-size: 0.9rem;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  
-  /* --- PROPERTI BARU UNTUK LAYOUT --- */
-  display: flex;
-  justify-content: center; /* Pusatkan konten (teks + delta) */
-  align-items: center;    /* Sejajarkan secara vertikal */
-  gap: 0.5rem;              /* Beri sedikit jarak antara teks dan delta */
-}
-
-/* -------------------------------------------------------------------------- */
-/* 4. GAYA UNTUK SETIAP KATA & SEPARATOR                                      */
-/* -------------------------------------------------------------------------- */
 
 .word {
   display: inline-flex;
@@ -172,22 +224,17 @@ input:focus + .slider {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 5. STATUS UNTUK SETIAP HURUF & SEPARATOR                                   */
+/* 6. Status untuk Setiap Huruf & Separator                                   */
 /* -------------------------------------------------------------------------- */
 
-/* Gaya untuk huruf yang sudah diketik dengan benar. */
 .correct {
-  color: #a1a1aa; /* Warna abu-abu. */
+  color: #a1a1aa;
 }
 
-/* Gaya untuk SEMUA huruf yang salah (baik di masa lalu maupun saat ini). */
-/* Hanya mengatur warna, tanpa animasi. */
 .incorrect {
-  color: #ef4444; /* Warna merah. */
-  /* Hapus text-decoration dari sini agar tidak diterapkan pada kesalahan lama. */
+  color: #ef4444;
 }
 
-/* Gaya untuk huruf yang sedang aktif ditunggu inputnya (tanpa error). */
 .active-char {
   color: #18181b;
   text-decoration: underline;
@@ -197,23 +244,15 @@ input:focus + .slider {
   animation: blink-underline 1s infinite;
 }
 
-/* Gaya untuk huruf aktif saat terjadi kesalahan (kombinasi). */
-/* Ini akan mendapatkan warna dari .incorrect dan animasi dari .error */
 .active-char.error {
-  color: #ef4444;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-decoration-color: #ef4444; /* Garis bawah merah. */
-  text-underline-offset: 10px;
-  animation: shake 0.4s; /* Mainkan animasi getar. */
+  text-decoration-color: #ef4444;
+  animation: shake 0.4s;
 }
 
-/* Gaya untuk separator default (tidak aktif). */
 .separator {
   color: #a1a1aa; 
 }
 
-/* Gaya untuk separator saat menjadi aktif. */
 .separator-active {
   color: #18181b; 
   text-decoration: underline;
@@ -223,7 +262,6 @@ input:focus + .slider {
   animation: blink-underline 1s infinite;
 }
 
-/* Gaya untuk separator saat terjadi error di akhir kata. */
 .separator-error {
   color: #ef4444; 
   text-decoration: underline;
@@ -234,7 +272,7 @@ input:focus + .slider {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 6. ANIMASI KEYFRAMES                                                       */
+/* 7. Animasi                                                                 */
 /* -------------------------------------------------------------------------- */
 
 @keyframes blink-underline {
