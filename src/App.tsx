@@ -131,6 +131,11 @@ function App() {
             setIsError(false);
           }
         } else {
+          // Tentukan di mana kesalahan terjadi.
+          const mistakeIndex = userInput.length; 
+          // Catat kesalahan pada posisi tersebut.
+          logMistake(activeWordIndex, mistakeIndex); 
+
           setIsError(true);
           setErrorCount(c => c + 1);
         }
