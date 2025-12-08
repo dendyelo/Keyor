@@ -41,7 +41,6 @@ header {
 
 /* --- GAYA UNTUK KOMPONEN SWITCH TOGGLE MODERN --- */
 
-/* Kontainer utama untuk switch. Bertindak sebagai label untuk checkbox. */
 .switch-toggle {
   position: relative;
   display: inline-block;
@@ -49,14 +48,12 @@ header {
   height: 28px;
 }
 
-/* Sembunyikan checkbox HTML default, karena kita akan membuat tampilan kustom. */
 .switch-toggle input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* Gaya untuk "rel" slider, yaitu latar belakang dari switch. */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -64,44 +61,66 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc; /* Warna abu-abu saat switch mati. */
-  transition: .4s; /* Animasi transisi yang halus. */
-  border-radius: 28px; /* Membuat ujungnya menjadi bulat sempurna. */
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 28px;
 }
 
-/* Gaya untuk "kenop" slider (lingkaran yang bergerak) menggunakan pseudo-element. */
 .slider:before {
   position: absolute;
   content: "";
   height: 20px;
   width: 20px;
-  left: 4px; /* Posisi awal kenop dari kiri. */
-  bottom: 4px; /* Posisi awal kenop dari bawah. */
+  left: 4px;
+  bottom: 4px;
   background-color: white;
   transition: .4s;
-  border-radius: 50%; /* Membuat kenop menjadi lingkaran. */
+  border-radius: 50%;
 }
 
-/* Perubahan gaya saat checkbox dalam keadaan "checked" (aktif). */
 input:checked + .slider {
-  background-color: #3b82f6; /* Ubah warna latar menjadi biru. */
+  background-color: #3b82f6;
 }
 
-/* Gerakkan kenop ke kanan saat checkbox aktif. */
 input:checked + .slider:before {
-  transform: translateX(22px); /* Jarak pergeseran kenop. */
+  transform: translateX(22px);
 }
 
-/* Efek bayangan untuk aksesibilitas saat switch difokuskan. */
 input:focus + .slider {
   box-shadow: 0 0 1px #3b82f6;
 }
 
-
 /* -------------------------------------------------------------------------- */
-/* 3. AREA KONTEN (TERJEMAHAN & KATA-KATA)                                   */
+/* 3. AREA KONTEN (STATISTIK, TERJEMAHAN & KATA-KATA)                         */
 /* -------------------------------------------------------------------------- */
 
+/* Kontainer untuk menampilkan statistik. */
+.stats-container {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #3b82f6;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+/* Kontainer untuk menampilkan terjemahan kata. */
 .translation-container {
   font-size: 1.5rem;
   color: #6b7280;
@@ -112,6 +131,7 @@ input:focus + .slider {
   transition: opacity 0.3s ease-in-out;
 }
 
+/* Kontainer utama yang membungkus semua kata dan separator. */
 .word-container {
   font-size: 1.8rem;
   line-height: 3rem;
@@ -142,10 +162,19 @@ input:focus + .slider {
 /* 5. STATUS UNTUK SETIAP HURUF & SEPARATOR                                   */
 /* -------------------------------------------------------------------------- */
 
+/* Gaya untuk huruf yang sudah diketik dengan benar. */
 .correct {
-  color: #a1a1aa;
+  color: #a1a1aa; /* Warna abu-abu. */
 }
 
+/* Gaya untuk SEMUA huruf yang salah (baik di masa lalu maupun saat ini). */
+/* Hanya mengatur warna, tanpa animasi. */
+.incorrect {
+  color: #ef4444; /* Warna merah. */
+  /* Hapus text-decoration dari sini agar tidak diterapkan pada kesalahan lama. */
+}
+
+/* Gaya untuk huruf yang sedang aktif ditunggu inputnya (tanpa error). */
 .active-char {
   color: #18181b;
   text-decoration: underline;
@@ -155,19 +184,23 @@ input:focus + .slider {
   animation: blink-underline 1s infinite;
 }
 
-.incorrect.error {
+/* Gaya untuk huruf aktif saat terjadi kesalahan (kombinasi). */
+/* Ini akan mendapatkan warna dari .incorrect dan animasi dari .error */
+.active-char.error {
   color: #ef4444;
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-decoration-color: #ef4444;
+  text-decoration-color: #ef4444; /* Garis bawah merah. */
   text-underline-offset: 10px;
-  animation: shake 0.4s;
+  animation: shake 0.4s; /* Mainkan animasi getar. */
 }
 
+/* Gaya untuk separator default (tidak aktif). */
 .separator {
   color: #a1a1aa; 
 }
 
+/* Gaya untuk separator saat menjadi aktif. */
 .separator-active {
   color: #18181b; 
   text-decoration: underline;
@@ -177,6 +210,7 @@ input:focus + .slider {
   animation: blink-underline 1s infinite;
 }
 
+/* Gaya untuk separator saat terjadi error di akhir kata. */
 .separator-error {
   color: #ef4444; 
   text-decoration: underline;
