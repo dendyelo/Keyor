@@ -1,37 +1,31 @@
 /* File: src/App.css */
 
-
+/* Impor gaya dasar untuk react-tooltip */
 @import 'react-tooltip/dist/react-tooltip.css';
 
 /* -------------------------------------------------------------------------- */
 /* 1. PENGATURAN DASAR & LAYOUT UTAMA                                         */
 /* -------------------------------------------------------------------------- */
 
-/* Mengatur agar elemen html dan body memenuhi seluruh tinggi viewport. */
 html, body {
   height: 100%;
   margin: 0;
 }
 
 body {
-  /* Mengatur font dasar untuk seluruh aplikasi. */
   font-family: sans-serif;
-  /* Warna latar belakang abu-abu lembut untuk halaman. */
   background-color: #f0f0f0;
-  
-  /* Trik modern untuk menengahkan elemen secara sempurna (horizontal & vertikal). */
   display: grid;
   place-items: center;
 }
 
-/* Kontainer utama aplikasi. */
 .app-container {
   width: 80%;
-  max-width: 900px; /* Batas lebar maksimum agar tidak terlalu lebar di layar besar. */
+  max-width: 900px;
   background-color: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Efek bayangan lembut. */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -39,128 +33,155 @@ body {
 /* -------------------------------------------------------------------------- */
 
 header {
-  /* Menggunakan Flexbox untuk menata judul dan tombol speaker. */
   display: flex;
-  justify-content: space-between; /* Mendorong judul ke kiri dan tombol ke kanan. */
-  align-items: center; /* Menyejajarkan item secara vertikal. */
-  margin-bottom: 1rem; /* Jarak bawah ke elemen berikutnya. */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-/* Tombol untuk mengaktifkan/menonaktifkan voice over. */
-.speaker-button {
-  background: none; /* Hapus latar belakang default. */
-  border: 2px solid transparent; /* Border transparan untuk efek fokus. */
-  font-size: 1.5rem;
+/* --- GAYA UNTUK KOMPONEN SWITCH TOGGLE MODERN --- */
+
+/* Kontainer utama untuk switch. Bertindak sebagai label untuk checkbox. */
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+/* Sembunyikan checkbox HTML default, karena kita akan membuat tampilan kustom. */
+.switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Gaya untuk "rel" slider, yaitu latar belakang dari switch. */
+.slider {
+  position: absolute;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: background-color 0.2s, border-color 0.2s; /* Transisi halus. */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc; /* Warna abu-abu saat switch mati. */
+  transition: .4s; /* Animasi transisi yang halus. */
+  border-radius: 28px; /* Membuat ujungnya menjadi bulat sempurna. */
 }
 
-.speaker-button:hover {
-  background-color: #f3f4f6; /* Efek hover. */
+/* Gaya untuk "kenop" slider (lingkaran yang bergerak) menggunakan pseudo-element. */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px; /* Posisi awal kenop dari kiri. */
+  bottom: 4px; /* Posisi awal kenop dari bawah. */
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%; /* Membuat kenop menjadi lingkaran. */
 }
 
-/* Gaya untuk aksesibilitas saat tombol difokuskan menggunakan keyboard. */
-.speaker-button:focus, .speaker-button:focus-visible {
-  outline: none; /* Hapus outline default. */
-  border-color: #3b82f6; /* Gunakan border biru sebagai indikator fokus. */
+/* Perubahan gaya saat checkbox dalam keadaan "checked" (aktif). */
+input:checked + .slider {
+  background-color: #3b82f6; /* Ubah warna latar menjadi biru. */
 }
+
+/* Gerakkan kenop ke kanan saat checkbox aktif. */
+input:checked + .slider:before {
+  transform: translateX(22px); /* Jarak pergeseran kenop. */
+}
+
+/* Efek bayangan untuk aksesibilitas saat switch difokuskan. */
+input:focus + .slider {
+  box-shadow: 0 0 1px #3b82f6;
+}
+
 
 /* -------------------------------------------------------------------------- */
 /* 3. AREA KONTEN (TERJEMAHAN & KATA-KATA)                                   */
 /* -------------------------------------------------------------------------- */
 
-/* Kontainer untuk menampilkan terjemahan kata. */
 .translation-container {
   font-size: 1.5rem;
-  color: #6b7280; /* Warna abu-abu. */
+  color: #6b7280;
   text-align: center;
   margin-bottom: 2rem;
-  height: 2rem; /* Tinggi tetap agar layout tidak "melompat" saat terjemahan muncul/hilang. */
+  height: 2rem;
   font-style: italic;
-  transition: opacity 0.3s ease-in-out; /* Transisi halus saat teks berubah. */
+  transition: opacity 0.3s ease-in-out;
 }
 
-/* Kontainer utama yang membungkus semua kata dan separator. */
 .word-container {
   font-size: 1.8rem;
-  line-height: 3rem; /* Jarak antar baris. */
-  display: flex; /* Mengatur kata dan separator dalam satu baris. */
-  flex-wrap: wrap; /* Izinkan item untuk pindah ke baris baru jika tidak cukup ruang. */
-  align-items: center; /* Menyejajarkan semua item di tengah secara vertikal. */
+  line-height: 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* -------------------------------------------------------------------------- */
 /* 4. GAYA UNTUK SETIAP KATA & SEPARATOR                                      */
 /* -------------------------------------------------------------------------- */
 
-/* Gaya untuk setiap kata. */
 .word {
-  display: inline-flex; /* Membuat span di dalamnya sejajar. */
-  align-items: baseline; /* Menyejajarkan garis dasar teks. */
+  display: inline-flex;
+  align-items: baseline;
 }
 
-/* Gaya dasar untuk semua jenis separator (default, aktif, error). */
 .separator,
 .separator-active,
 .separator-error {
-  margin: 0 0.5rem; /* Jarak horizontal dari kata. */
+  margin: 0 0.5rem;
   display: inline-flex;
   align-items: baseline;
-  font-size: 0.8rem; /* Ukuran font lebih kecil untuk lingkaran. */
+  font-size: 0.8rem;
 }
 
 /* -------------------------------------------------------------------------- */
 /* 5. STATUS UNTUK SETIAP HURUF & SEPARATOR                                   */
 /* -------------------------------------------------------------------------- */
 
-/* Gaya untuk huruf yang sudah diketik dengan benar (di kata sebelumnya atau saat ini). */
 .correct {
-  color: #a1a1aa; /* Warna abu-abu. */
+  color: #a1a1aa;
 }
 
-/* Gaya untuk huruf yang sedang aktif ditunggu inputnya (tanpa error). */
 .active-char {
-  color: #18181b; /* Warna hitam. */
+  color: #18181b;
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-decoration-color: #3b82f6; /* Garis bawah biru. */
-  text-underline-offset: 10px; /* Jarak antara teks dan garis bawah. */
-  animation: blink-underline 1s infinite; /* Animasi berkedip. */
-}
-
-/* Gaya untuk huruf aktif saat terjadi kesalahan input. */
-.incorrect.error {
-  color: #ef4444; /* Warna merah. */
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-decoration-color: #ef4444; /* Garis bawah merah. */
+  text-decoration-color: #3b82f6;
   text-underline-offset: 10px;
-  animation: shake 0.4s; /* Animasi getar. */
-}
-
-/* Gaya untuk separator default (tidak aktif). */
-.separator {
-  color: #a1a1aa; /* Warna abu-abu. */
-}
-
-/* Gaya untuk separator saat menjadi aktif (setelah kata selesai diketik). */
-.separator-active {
-  color: #18181b; /* Warna hitam. */
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-decoration-color: #3b82f6; /* Garis bawah biru. */
-  text-underline-offset: 15px; /* Jarak custom untuk separator agar sejajar. */
   animation: blink-underline 1s infinite;
 }
 
-/* Gaya untuk separator saat terjadi error di akhir kata. */
-.separator-error {
-  color: #ef4444; /* Warna merah. */
+.incorrect.error {
+  color: #ef4444;
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-decoration-color: #ef4444; /* Garis bawah merah. */
+  text-decoration-color: #ef4444;
+  text-underline-offset: 10px;
+  animation: shake 0.4s;
+}
+
+.separator {
+  color: #a1a1aa; 
+}
+
+.separator-active {
+  color: #18181b; 
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #3b82f6; 
+  text-underline-offset: 15px;
+  animation: blink-underline 1s infinite;
+}
+
+.separator-error {
+  color: #ef4444; 
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #ef4444; 
   text-underline-offset: 15px;
   animation: shake 0.4s;
 }
@@ -169,13 +190,11 @@ header {
 /* 6. ANIMASI KEYFRAMES                                                       */
 /* -------------------------------------------------------------------------- */
 
-/* Animasi untuk garis bawah aktif agar berkedip. */
 @keyframes blink-underline {
   0%, 100% { text-decoration-color: #3b82f6; }
   50% { text-decoration-color: transparent; }
 }
 
-/* Animasi getar untuk memberikan umpan balik saat terjadi error. */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-3px); }

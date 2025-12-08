@@ -177,14 +177,18 @@ function App() {
     <div className="app-container">
       <header>
         <h1>Keyor</h1>
-        <button 
-          onClick={toggleVoiceOver} 
-          className="speaker-button" 
-          data-tooltip-id="speaker-tooltip"
-          data-tooltip-content={`${isVoiceOverEnabled ? "Disable" : "Enable"} Voice Over (Ctrl + M)`}
-        >
-          {isVoiceOverEnabled ? '🔊' : '🔇'}
-        </button>
+          <label 
+            className="switch-toggle"
+            data-tooltip-id="speaker-tooltip"
+            data-tooltip-content={`${isVoiceOverEnabled ? "Disable" : "Enable"} Voice Over (Ctrl + M)`}
+          >
+            <input 
+              type="checkbox" 
+              onChange={toggleVoiceOver} 
+              checked={isVoiceOverEnabled} 
+            />
+            <span className="slider"></span>
+          </label>
       </header>
 
       <div className="translation-container">
