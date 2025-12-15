@@ -1,4 +1,4 @@
-import { en } from './en/_categories';
+import { en } from './en';
 
 export const content = {
   languages: {
